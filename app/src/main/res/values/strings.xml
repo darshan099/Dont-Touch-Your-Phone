@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Focus</string>
+    <string name="disclaimer">We need permission to lock the screen. Just in case if you
+    think that I am going to hack your phone, well it does not matter, you use Facebook right?
+    You can disable whenever you want to btw!</string>
+    <string name="no_tts">Text to speech not available! Download now.</string>
+    <string name="s1">What the hell dude? leave me alone!</string>
+    <string name="s2">Do not touch me! i said do not!</string>
+    <string name="s3">i am sending your browser history to facebook! good luck</string>
+    <string name="s4">S T F U</string>
+    <string name="s5">you have no power here my son!</string>
+</resources>
