@@ -1,12 +1,25 @@
 <resources>
     <string name="app_name">Focus</string>
     <string name="disclaimer">We need permission to lock the screen. Just in case if you
-    think that I am going to hack your phone, well it does not matter, you use Facebook right?
-    You can disable whenever you want to btw!</string>
+    think that I am going to hack your phone, well it does not matter, you use Facebook right?\nYou can disable whenever you want to btw!</string>
     <string name="no_tts">Text to speech not available! Download now.</string>
     <string name="s1">What the hell dude? leave me alone!</string>
     <string name="s2">Do not touch me! i said do not!</string>
     <string name="s3">i am sending your browser history to facebook! good luck</string>
     <string name="s4">S T F U</string>
     <string name="s5">you have no power here my son!</string>
+    <string name="s6">I am extending your time for extra 5 minutes! smiling face with tears</string>
+    <string name="s7">Leave me alone. I am not your partner!</string>
+    <string name="s8">Your crush just texted! I am deleting it.</string>
+    <string name="s9">Do not touch me! Naughty human.</string>
+    <string name="s10">Deleting all your files. This process is irreversible</string>
+    <string name="Open">open</string>
+    <string name="Close">close</string>
+    <string name="EntryHelp">
+        1. Toggle the switch to alternate between Custom Voice Entry and Default Voice Entry \n\n
+        2. TO ADD: Click on the "ADD ENTRY" button to add a custom voice entry. \n\n
+        3. TO DELETE: Click on any Custom Voice Entries to delete it. \n\n
+        To enable Custom Voice please add atleast one Voice Entry.
+    </string>
+    <string name="deleteEntry">Do you want to delete this?</string>
 </resources>

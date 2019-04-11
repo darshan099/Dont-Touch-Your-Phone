@@ -4,28 +4,43 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    DrawerLayout dl;
+    NavigationView nav_view;
+    ActionBarDrawerToggle abdt;
     Button lock,disable,enable;
     EditText locktime;
     TextView textView;
-    String[] strspeech=new String[] {"s1","s2","s3","s4","s5"};
+    String[] strspeech=new String[] {"s1","s2","s3","s4","s5","s6","s7","s8","s9","s10"};
     long time;
     ClassSpeak speaktext;
+    DatabaseHelper databaseHelper;
     public static final int ADMIN_ENABLE=1;
     public static final int TTS_AVAILABLE=2;
     DevicePolicyManager devicePolicyManager;
@@ -41,12 +56,50 @@ public class MainActivity extends AppCompatActivity {
         locktime=findViewById(R.id.locktime);
         textView=findViewById(R.id.checkresume);
         disable=findViewById(R.id.disableButton);
+        dl=findViewById(R.id.drawerlayout);
+        nav_view=findViewById(R.id.nav_view);
+        abdt=new ActionBarDrawerToggle(this, dl,R.string.Open,R.string.Close);
+        abdt.setDrawerIndicatorEnabled(true);
+
+
         speaktext=new ClassSpeak(getApplicationContext());
+        databaseHelper=new DatabaseHelper(this);
+
+        SharedPreferences preferences= PreferenceManager.getDefaultSharedPreferences(this);
+        if(!preferences.getBoolean("firsttime",false))
+        {
+            databaseHelper.init_voice_toggle("0");
+            SharedPreferences.Editor editor=preferences.edit();
+            editor.putBoolean("firsttime",true);
+            editor.apply();
+        }
 
         Intent checktts=new Intent();
         checktts.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checktts,TTS_AVAILABLE);
 
+        dl.addDrawerListener(abdt);
+        abdt.syncState();
+
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id=item.getItemId();
+                if(id==R.id.editentry)
+                {
+                    dl.closeDrawers();
+                    Intent intent=new Intent(MainActivity.this,EditVoiceEntry.class);
+                    startActivity(intent);
+                }
+                else if(id==R.id.home)
+                {
+                    dl.closeDrawers();
+                }
+                return true;
+            }
+        });
         enable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,6 +146,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return abdt.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onResume()
     {
         super.onResume();
@@ -101,9 +159,25 @@ public class MainActivity extends AppCompatActivity {
         enable.setVisibility(isactive ? View.GONE : View.VISIBLE);
         if(isactive && System.currentTimeMillis() < time)
         {
-            int random=new Random().nextInt(5);
-            int resid=getResources().getIdentifier(strspeech[random],"string","com.example.darshanpc.focus");
-            speaktext.Speak(getResources().getString(resid));
+            if(databaseHelper.get_voice_toggle_value().equals("0")) {
+                int random = new Random().nextInt(10);
+                int resid = getResources().getIdentifier(strspeech[random], "string", "com.example.darshanpc.focus");
+                speaktext.Speak(getResources().getString(resid));
+            }
+            else if(databaseHelper.get_voice_toggle_value().equals("1"))
+            {
+                List entrylist=databaseHelper.get_entry_for_voice();
+                if(entrylist.size()==0)
+                {
+                    int random = new Random().nextInt(10);
+                    int resid = getResources().getIdentifier(strspeech[random], "string", "com.example.darshanpc.focus");
+                    speaktext.Speak(getResources().getString(resid));
+                }
+                else {
+                    int random = new Random().nextInt(entrylist.size());
+                    speaktext.Speak(entrylist.get(random).toString());
+                }
+            }
             devicePolicyManager.lockNow();
         }
     }
